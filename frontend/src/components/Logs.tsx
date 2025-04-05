@@ -3,7 +3,7 @@ import { LazyLog, ScrollFollow } from "@melloware/react-logviewer";
 const Logs = () => {
   return (
     <div className="flex">
-      <div className="w-screen h-[calc(100vh-40px)] m-4 rounded-md">
+      <div className="w-screen h-[calc(100vh-150px)] m-4 rounded-md">
         <ScrollFollow
           startFollowing={true}
           render={({ follow, onScroll }) => (

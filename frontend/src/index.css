@@ -10,3 +10,7 @@
 .revert-tailwind > * {
 	all: revert;
 }
+
+.react-lazylog {
+	border-radius: 15px;
+}

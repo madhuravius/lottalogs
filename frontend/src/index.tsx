@@ -1,8 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Logs from "./components/Logs";
 
 import "./index.css";
+import ActionBar from "./components/ActionBar";
+import Logs from "./components/Logs";
 
 const root = document.getElementById("root");
 
@@ -12,6 +13,7 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
+    <ActionBar />
     <Logs />
   </React.StrictMode>,
 );
