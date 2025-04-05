@@ -3,7 +3,7 @@ import LogoFull from "../assets/logo-full.png";
 const ActionBar = () => {
     return (
         <div className="flex items-center p-4 bg-base-200">
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 pointer-events-none select-none">
                 <img src={LogoFull} alt="Logo" className="h-12 w-12 m-2 rounded-md" />
                 <p className="text-xs text-gray-500 text-center">Lotta Logs</p>
             </div>
