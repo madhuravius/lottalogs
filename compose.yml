@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  app:
+    image: alpine
+    command: sh -c 'while true; do echo "$(date) - Hello from the app!" >> /app-logs/app.log; sleep 5; done'
+    container_name: alpine
+    volumes:
+      - app-logs:/app-logs
+
+  vector:
+    image: timberio/vector:latest-alpine
+    container_name: vector
+    environment:
+      - VECTOR_CONFIG_TOML=/etc/vector/vector.toml
+    volumes:
+      - app-logs:/var/log/app
+      - ./vector/vector.toml:/etc/vector/vector.toml:ro
+    tmpfs:
+      - /etc/vector
+    depends_on:
+      - app
+      - elasticsearch
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.4
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.4
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - xpack.security.enabled=false
+    ports:
+      - "5601:5601"
+
+volumes:
+  app-logs:
+
+networks:
+  default:

@@ -1,0 +1,13 @@
+[sources.app_logs]
+type = "file"
+include = ["/var/log/app/app.log"]
+
+[transforms.deduped_app_logs]
+type = "dedupe"
+inputs = [ "app_logs" ]
+
+[sinks.elasticsearch]
+type = "elasticsearch"
+id_key = "vector-elasticsearch"
+inputs = ["deduped_app_logs"]
+endpoints = ["http://elasticsearch:9200"]
