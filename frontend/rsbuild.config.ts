@@ -5,8 +5,8 @@ import { pluginReact } from "@rsbuild/plugin-react";
 export default defineConfig({
   plugins: [pluginReact()],
   html: {
-    favicon: "src/assets/favicon.ico",
-    title: "Loco SaaS Starter",
+    favicon: "src/assets/favicon.png",
+    title: "Lotta Logs",
   },
   server: {
     proxy: {
