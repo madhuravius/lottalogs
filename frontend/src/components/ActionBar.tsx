@@ -7,18 +7,23 @@ import { LogEntry, useLogs } from "../contexts/LogsContext";
 const ActionBar = () => {
   const [searchText, setSearchText] = useState("");
   const debouncedSearchText = useDebounce(searchText, 500);
-  const { setLogs } = useLogs();
+  const { setLogs, wrapLines, setWrapLines } = useLogs();
   const [healthyBackend, setHealthyBackend] = useState<boolean>(true);
 
   useQuery({
     queryKey: ["logs", debouncedSearchText],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/logs?search_text=${encodeURIComponent(debouncedSearchText)}`,
-      );
-      const data: LogEntry[] = await res.json();
-      setLogs(data);
-      return data;
+      try {
+        const res = await fetch(
+          `/api/logs?search_text=${encodeURIComponent(debouncedSearchText)}`,
+        );
+        const data: LogEntry[] = await res.json();
+        setLogs(data);
+        return data;
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+        setLogs([]);
+      }
     },
     enabled: true,
     refetchInterval: 5000,
@@ -73,6 +78,17 @@ const ActionBar = () => {
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
       />
+      <div className="form-control ml-4">
+        <label className="cursor-pointer label">
+          <span className="label-text mr-2">Wrap Lines</span>
+          <input
+            type="checkbox"
+            className="toggle toggle-primary toggle-sm"
+            checked={wrapLines}
+            onChange={(e) => setWrapLines(e.target.checked)}
+          />
+        </label>
+      </div>
       <a href="https://github.com/madhuravius/lottalogs" target="_blank">
         <svg
           viewBox="0 0 16 16"

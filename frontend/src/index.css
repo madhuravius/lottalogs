@@ -18,3 +18,7 @@ body {
 .react-lazylog {
 	border-radius: 0px;
 }
+
+.wrapped-lines .log-part {
+	padding-right: 13px;
+}

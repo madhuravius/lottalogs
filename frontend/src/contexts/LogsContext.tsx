@@ -11,15 +11,18 @@ export interface LogEntry {
 type LogsContextType = {
   logs: LogEntry[] | null;
   setLogs: (logs: LogEntry[] | null) => void;
+  wrapLines: boolean;
+  setWrapLines: (wrap: boolean) => void;
 };
 
 const LogsContext = createContext<LogsContextType | undefined>(undefined);
 
 export const LogsProvider = ({ children }: { children: ReactNode }) => {
   const [logs, setLogs] = useState<LogEntry[] | null>(null);
+  const [wrapLines, setWrapLines] = useState<boolean>(true);
 
   return (
-    <LogsContext.Provider value={{ logs, setLogs }}>
+    <LogsContext.Provider value={{ logs, setLogs, wrapLines, setWrapLines }}>
       {children}
     </LogsContext.Provider>
   );
