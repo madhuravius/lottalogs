@@ -1,8 +1,4 @@
 version: 2
-registries:
-  npm-registry:
-    type: npm-registry
-    url: https://registry.npmjs.org
 
 updates:
   - package-ecosystem: "cargo"
@@ -13,8 +9,6 @@ updates:
     directory: "/frontend"
     schedule:
       interval: "weekly"
-    registries:
-      - npm-registry
   - package-ecosystem: github-actions
     directory: "/"
     schedule:

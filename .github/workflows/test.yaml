@@ -2,8 +2,10 @@ name: Test
 on:
   push:
     branches:
-      - main
-  pull_request:
+      - '**'
+      - '!main'
+    tags-ignore:
+      - '**'
 
 env:
   RUST_TOOLCHAIN: stable
