@@ -39,7 +39,30 @@ jobs:
         with:
           command: test
           args: --all-features --all
-        env:
-          REDIS_URL: redis://localhost:${{job.services.redis.ports[6379]}}
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres_test
-          
+
+  test-ts:
+    name: Test TypeScript Frontend
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        working-directory: ./frontend
+      - name: Install frontend dependencies
+        run: pnpm install
+        working-directory: ./frontend
+      - name: Run frontend tests
+        run: pnpm test
+        working-directory: ./frontend
+      - name: Build frontend
+        run: pnpm build
+        working-directory: ./frontend
