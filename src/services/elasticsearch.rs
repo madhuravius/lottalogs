@@ -1,5 +1,6 @@
 use elasticsearch::{http::transport::Transport, Elasticsearch, Error};
 use serde::Deserialize;
+use serde_json::json;
 use tracing::info;
 
 use crate::views::logs::{LogResponse, LogsQueryParameters};
@@ -61,10 +62,11 @@ impl ElasticsearchService {
 
     pub async fn search(&self, params: LogsQueryParameters) -> Result<Vec<LogResponse>, Error> {
         let search_text = params.search_text.unwrap_or_default();
+        let start_timestamp = params.start_timestamp.as_deref();
         let match_block = if search_text.is_empty() {
-            serde_json::json!({ "match_all": {} })
+            json!({ "match_all": {} })
         } else {
-            serde_json::json!({
+            json!({
                 "match": {
                     "message": {
                         "query": format!("{}{}{}", "*", search_text, "*")
@@ -72,9 +74,21 @@ impl ElasticsearchService {
                 },
             })
         };
-
+        let mut filter_clauses = Vec::new();
+        filter_clauses.push(json!({
+            "range": {
+                "timestamp": {
+                    "gt": start_timestamp
+                }
+            }
+        }));
         let query = serde_json::json!({
-            "query": match_block,
+            "query": {
+                "bool": {
+                    "must": match_block,
+                    "filter": filter_clauses
+                }
+            },
             "size": params.size,
             "sort": [
             {
