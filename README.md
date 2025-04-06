@@ -4,7 +4,7 @@ App to view aggregated logs quickly without using k9s or equivalent. I wanted so
 with the simplicity of something like [Papertrail](https://www.papertrail.com/) but was unable to find it.
 Screenshot of functionality visible below:
 
-![LottaLogs screenshot](docs/images/proof.png)
+![LottaLogs screenshot](docs/images/proof.jpeg)
 
 To get started, run `make` to view help.
 

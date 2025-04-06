@@ -20,7 +20,7 @@ const Logs = () => {
 
   return (
     <div className={`block${wrapLines ? " wrapped-lines" : ""}`}>
-      <div className="w-screen h-[calc(100vh-110px)] p-4 mb-3 rounded-md shadow-[0px_0px_15px_0px_rgba(34,_197,_94,_0.5)]">
+      <div className="w-screen h-[calc(100vh-95px)] p-4 mb-3 rounded-md shadow-[0px_0px_15px_0px_rgba(34,_197,_94,_0.5)]">
         <ScrollFollow
           startFollowing
           render={({ follow, onScroll }) => (
