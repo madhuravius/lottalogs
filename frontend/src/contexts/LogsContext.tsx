@@ -19,7 +19,7 @@ const LogsContext = createContext<LogsContextType | undefined>(undefined);
 
 export const LogsProvider = ({ children }: { children: ReactNode }) => {
   const [logs, setLogs] = useState<LogEntry[] | null>(null);
-  const [wrapLines, setWrapLines] = useState<boolean>(true);
+  const [wrapLines, setWrapLines] = useState<boolean>(false);
 
   return (
     <LogsContext.Provider value={{ logs, setLogs, wrapLines, setWrapLines }}>
