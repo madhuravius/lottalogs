@@ -1,24 +1,24 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-	themes: dark --default;
+  themes: dark --default;
 }
 
 body {
-	font-family: monospace;
+  font-family: monospace;
 }
 
 .revert-tailwind {
-	all: initial;
+  all: initial;
 }
 
 .revert-tailwind > * {
-	all: revert;
+  all: revert;
 }
 
 .react-lazylog {
-	border-radius: 0px;
+  border-radius: 0px;
 }
 
 .wrapped-lines .log-part {
-	padding-right: 13px;
+  padding-right: 13px;
 }

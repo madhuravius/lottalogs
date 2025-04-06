@@ -1,5 +1,5 @@
 import { LazyLog, ScrollFollow } from "@melloware/react-logviewer";
-import { LogEntry, useLogs } from "../contexts/LogsContext";
+import { type LogEntry, useLogs } from "../contexts/LogsContext";
 
 const RESET = "[39m";
 const GREEN = "[32m";
@@ -8,7 +8,7 @@ const CYAN = "[36m";
 const Logs = () => {
   const { logs, wrapLines } = useLogs();
 
-  const logText = !!logs?.map
+  const logText = logs?.map
     ? logs
         ?.map(
           (log: LogEntry) =>

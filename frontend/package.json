@@ -7,7 +7,7 @@
     "dev": "rsbuild dev --open",
     "build": "rsbuild build",
     "lint": "biome check src/",
-    "lint:fix": "biome format --write .",
+    "lint:fix": "biome check --fix --unsafe .",
     "preview": "rsbuild preview"
   },
   "dependencies": {
