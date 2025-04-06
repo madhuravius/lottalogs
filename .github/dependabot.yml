@@ -1,20 +1,16 @@
 version: 2
-registries:
-  npm-registry:
-    type: npm-registry
-    url: https://registry.npmjs.org
 
 updates:
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:
       interval: "weekly"
+    versioning-strategy: increase
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
       interval: "weekly"
-    registries:
-      - npm-registry
+    versioning-strategy: increase
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
