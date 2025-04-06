@@ -8,6 +8,7 @@ const ActionBar = () => {
   const [searchText, setSearchText] = useState("");
   const debouncedSearchText = useDebounce(searchText, 500);
   const { setLogs } = useLogs();
+  const [healthyBackend, setHealthyBackend] = useState<boolean>(true); // Default to true initially
 
   useQuery({
     queryKey: ["logs", debouncedSearchText],
@@ -25,8 +26,41 @@ const ActionBar = () => {
     staleTime: 4900,
   });
 
+  useQuery({
+    queryKey: ["backendHealth"],
+    queryFn: async () => {
+      try {
+        const res = await fetch("/api/logs/status");
+        if (!res.ok) throw new Error("Backend status check failed");
+        const data = await res.json();
+        setHealthyBackend(data?.status === "healthy");
+        return data;
+      } catch (error) {
+        setHealthyBackend(false);
+        throw error;
+      }
+    },
+    enabled: true,
+    refetchInterval: 2000,
+    staleTime: 1900,
+    retry: true,
+  });
+
   return (
     <div className="flex items-center p-4 bg-base-200">
+      <div className="ml-4 flex items-center absolute top-2 right-2">
+        <div className="inline-grid *:[grid-area:1/1] mr-2">
+          <div
+            className={`status ${healthyBackend ? "status-success" : "status-error"} animate-ping`}
+          ></div>
+          <div
+            className={`status ${healthyBackend ? "status-success" : "status-error"}`}
+          ></div>
+        </div>
+        <span className="text-sm">
+          {healthyBackend ? "Healthy" : "Unhealthy"}
+        </span>
+      </div>
       <div className="flex-shrink-0 pointer-events-none select-none">
         <img src={LogoFull} alt="Logo" className="h-12 w-12 m-2 rounded-md" />
         <p className="text-xs text-gray-500 text-center">Lotta Logs</p>

@@ -3,6 +3,10 @@
 	themes: dark --default;
 }
 
+body {
+	font-family: monospace;
+}
+
 .revert-tailwind {
 	all: initial;
 }
