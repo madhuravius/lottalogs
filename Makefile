@@ -26,8 +26,12 @@ deps: ## Start dependencies for the server or workers
 	make install
 
 .PHONY: start
-start: ## Start the server and workers
+start: ## Start the backend server
 	cargo watch --ignore "frontend" -x check -s 'cargo run start'
+
+.PHONY: start-frontend
+start-frontend: ## Start the frontend
+	cd frontend && pnpm run dev
 
 .PHONY: test
 test: ## Run tests

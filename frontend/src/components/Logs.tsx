@@ -2,16 +2,16 @@ import { LazyLog, ScrollFollow } from "@melloware/react-logviewer";
 import { LogEntry, useLogs } from "../contexts/LogsContext";
 
 const Logs = () => {
-  const logs = useLogs();
+  const { logs } = useLogs();
 
   const logText =
-    logs?.logs
+    logs
       ?.map(
         (log: LogEntry) =>
           `[${new Date(log.timestamp).toLocaleString()}] ${log.message}`,
       )
+      .reverse()
       .join("\n") || "No logs found";
-  console.log(logs?.logs, logText);
 
   return (
     <div className="flex">

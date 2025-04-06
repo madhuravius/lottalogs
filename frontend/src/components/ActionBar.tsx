@@ -20,6 +20,9 @@ const ActionBar = () => {
       return data;
     },
     enabled: true,
+    refetchInterval: 5000,
+    refetchOnWindowFocus: true,
+    staleTime: 4900,
   });
 
   return (
