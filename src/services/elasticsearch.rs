@@ -18,9 +18,12 @@ struct EsSource {
 
 #[derive(Debug, Deserialize)]
 struct EsHit {
-    _id: String,
-    _index: String,
-    _source: EsSource,
+    #[serde(rename = "_id")]
+    id: String,
+    #[serde(rename = "_index")]
+    index: String,
+    #[serde(rename = "_source")]
+    source: EsSource,
 }
 
 #[derive(Debug, Deserialize)]
@@ -34,6 +37,11 @@ struct EsResponse {
 }
 
 impl ElasticsearchService {
+    /// Create a new Elasticsearch client with the given URL.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the client could not be created.
     pub fn new(elasticsearch_url: &str) -> Result<Self, Error> {
         let transport = Transport::single_node(elasticsearch_url)?;
         let client = Elasticsearch::new(transport);
@@ -44,6 +52,11 @@ impl ElasticsearchService {
         Ok(Self { client })
     }
 
+    /// Checks the health of the Elasticsearch cluster.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the health check fails.
     pub async fn health_check(&self) -> Result<(), Error> {
         let response = self.client.ping().send().await?;
         if response.status_code().is_success() {
@@ -60,6 +73,15 @@ impl ElasticsearchService {
         }
     }
 
+    /// Searches for logs matching the given parameters.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the search request fails.
+    ///
+    /// # Panics
+    ///
+    /// This function will panic if the index parameter is `None`.
     pub async fn search(&self, params: LogsQueryParameters) -> Result<Vec<LogResponse>, Error> {
         let search_text = params.search_text.unwrap_or_default();
         let start_timestamp = params.start_timestamp.as_deref();
@@ -116,11 +138,11 @@ impl ElasticsearchService {
                 .hits
                 .into_iter()
                 .map(|hit| LogResponse {
-                    message: hit._source.message,
-                    host: hit._source.host,
-                    index: hit._index,
-                    timestamp: hit._source.timestamp,
-                    id: hit._id,
+                    message: hit.source.message,
+                    host: hit.source.host,
+                    index: hit.index,
+                    timestamp: hit.source.timestamp,
+                    id: hit.id,
                 })
                 .collect();
 

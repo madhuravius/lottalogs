@@ -17,10 +17,16 @@ pub struct LogsQueryParameters {
     pub start_timestamp: Option<String>,
 }
 
+/// Returns `Self` with default values applied to fields that are `None`.
+///
+/// # Returns
+///
+/// A new instance with default values applied.
 impl LogsQueryParameters {
+    #[must_use]
     pub fn with_defaults(mut self) -> Self {
         if self.search_text.is_none() {
-            self.index = Some("".to_string());
+            self.index = Some(String::new());
         }
         if self.index.is_none() {
             self.index = Some("**".to_string());

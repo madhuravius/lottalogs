@@ -39,7 +39,7 @@ test: ## Run tests
 
 .PHONY: lint
 lint: ## Run linter
-	cargo clippy -- -D warnings
+	cargo clippy --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery -W rust-2018-idioms
 	cd frontend && pnpm run lint
 
 .PHONY: format
