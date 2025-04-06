@@ -6,7 +6,7 @@ import { LogEntry, useLogs } from "../contexts/LogsContext";
 
 const ActionBar = () => {
   const [searchText, setSearchText] = useState("");
-  const debouncedSearchText = useDebounce(searchText, 500); // 500ms debounce
+  const debouncedSearchText = useDebounce(searchText, 500);
   const { setLogs } = useLogs();
 
   useQuery({
