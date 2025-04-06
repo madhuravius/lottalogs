@@ -4,6 +4,10 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import ActionBar from "./components/ActionBar";
 import Logs from "./components/Logs";
+import { LogsProvider } from "./contexts/LogsContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const root = document.getElementById("root");
 
@@ -13,7 +17,11 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <ActionBar />
-    <Logs />
+    <QueryClientProvider client={queryClient}>
+      <LogsProvider>
+        <ActionBar />
+        <Logs />
+      </LogsProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
 );

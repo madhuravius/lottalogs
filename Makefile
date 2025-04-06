@@ -27,11 +27,7 @@ deps: ## Start dependencies for the server or workers
 
 .PHONY: start
 start: ## Start the server and workers
-	cargo run start
-
-.PHONY: server
-server: ## Start the server
-	cargo run --bin main
+	cargo watch --ignore "frontend" -x check -s 'cargo run start'
 
 .PHONY: test
 test: ## Run tests

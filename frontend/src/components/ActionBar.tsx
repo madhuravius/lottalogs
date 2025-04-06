@@ -1,6 +1,27 @@
 import LogoFull from "../assets/logo-full.png";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "../hooks/useDebounce";
+import { LogEntry, useLogs } from "../contexts/LogsContext";
 
 const ActionBar = () => {
+  const [searchText, setSearchText] = useState("");
+  const debouncedSearchText = useDebounce(searchText, 500); // 500ms debounce
+  const { setLogs } = useLogs();
+
+  useQuery({
+    queryKey: ["logs", debouncedSearchText],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/logs?search_text=${encodeURIComponent(debouncedSearchText)}`,
+      );
+      const data: LogEntry[] = await res.json();
+      setLogs(data);
+      return data;
+    },
+    enabled: true,
+  });
+
   return (
     <div className="flex items-center p-4 bg-base-200">
       <div className="flex-shrink-0 pointer-events-none select-none">
@@ -11,6 +32,8 @@ const ActionBar = () => {
         type="text"
         placeholder="Search logs..."
         className="input input-bordered w-full ml-4"
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
       />
       <a href="https://github.com/madhuravius/lottalogs" target="_blank">
         <svg

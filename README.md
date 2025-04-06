@@ -6,6 +6,8 @@ To get started, run `make` to view help.
 
 ## Quickstart 
 
+Requires `cargo-watch` [cargo-watch](https://crates.io/crates/cargo-watch) to be installed.
+
 ### Install Dependencies
 To install all necessary dependencies, run:
 ```bash
