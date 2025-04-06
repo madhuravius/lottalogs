@@ -35,10 +35,10 @@ importers:
         version: 1.9.4
       '@rsbuild/core':
         specifier: ^1
-        version: 1.3.3
+        version: 1.3.4
       '@rsbuild/plugin-react':
         specifier: ^1
-        version: 1.1.1(@rsbuild/core@1.3.3)
+        version: 1.1.1(@rsbuild/core@1.3.4)
       '@types/react':
         specifier: ^18
         version: 18.3.20
@@ -132,8 +132,8 @@ packages:
   '@module-federation/webpack-bundler-runtime@0.11.2':
     resolution: {integrity: sha512-WdwIE6QF+MKs/PdVu0cKPETF743JB9PZ62/qf7Uo3gU4fjsUMc37RnbJZ/qB60EaHHfjwp1v6NnhZw1r4eVsnw==}
 
-  '@rsbuild/core@1.3.3':
-    resolution: {integrity: sha512-1w/bvE6cVOYS7EMv7TI5i5BimDoqEt2T5nN89tC/BgouAnt1xKD0PeXKtuT9OE3xwuGt2iH1WEPLZz89b7tGcg==}
+  '@rsbuild/core@1.3.4':
+    resolution: {integrity: sha512-aYf56HZDkwhVicCeItFNjsEQSZC51X1yi01xBV4naNVCKUMxBAOriJyXZPdlHRntSvRQe1BjCao9cvXevwsRbw==}
     engines: {node: '>=16.7.0'}
     hasBin: true
 
@@ -313,8 +313,8 @@ packages:
   '@types/react@18.3.20':
     resolution: {integrity: sha512-IPaCZN7PShZK/3t6Q87pfTkRm6oLTd4vztyoj+cbHUF1g3FfVb2tFIL79uCRKEfv16AhqDMBywP2VW3KIZUvcg==}
 
-  caniuse-lite@1.0.30001711:
-    resolution: {integrity: sha512-OpFA8GsKtoV3lCcsI3U5XBAV+oVrMu96OS8XafKqnhOaEAW2mveD1Mx81Sx/02chERwhDakuXs28zbyEc4QMKg==}
+  caniuse-lite@1.0.30001712:
+    resolution: {integrity: sha512-MBqPpGYYdQ7/hfKiet9SCI+nmN5/hp4ZzveOJubl5DTAMa5oggjAuoi0Z4onBpKPFI2ePGnQuQIzF3VxDjDJig==}
 
   core-js@3.41.0:
     resolution: {integrity: sha512-SJ4/EHwS36QMJd6h/Rg+GyR4A5xE0FSI3eZ+iBVpfqf1x0eTSg1smWLHrA+2jQThZSh97fmSgFSU8B61nxosxA==}
@@ -578,7 +578,7 @@ snapshots:
       '@module-federation/runtime': 0.11.2
       '@module-federation/sdk': 0.11.2
 
-  '@rsbuild/core@1.3.3':
+  '@rsbuild/core@1.3.4':
     dependencies:
       '@rspack/core': 1.3.2(@swc/helpers@0.5.15)
       '@rspack/lite-tapable': 1.0.1
@@ -588,9 +588,9 @@ snapshots:
     transitivePeerDependencies:
       - '@rspack/tracing'
 
-  '@rsbuild/plugin-react@1.1.1(@rsbuild/core@1.3.3)':
+  '@rsbuild/plugin-react@1.1.1(@rsbuild/core@1.3.4)':
     dependencies:
-      '@rsbuild/core': 1.3.3
+      '@rsbuild/core': 1.3.4
       '@rspack/plugin-react-refresh': 1.0.3(react-refresh@0.16.0)
       react-refresh: 0.16.0
     transitivePeerDependencies:
@@ -640,7 +640,7 @@ snapshots:
       '@module-federation/runtime-tools': 0.11.2
       '@rspack/binding': 1.3.2
       '@rspack/lite-tapable': 1.0.1
-      caniuse-lite: 1.0.30001711
+      caniuse-lite: 1.0.30001712
       tinypool: 1.0.2
     optionalDependencies:
       '@swc/helpers': 0.5.15
@@ -737,7 +737,7 @@ snapshots:
       '@types/prop-types': 15.7.14
       csstype: 3.1.3
 
-  caniuse-lite@1.0.30001711: {}
+  caniuse-lite@1.0.30001712: {}
 
   core-js@3.41.0: {}
 
