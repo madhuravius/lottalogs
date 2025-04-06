@@ -1,18 +1,20 @@
 use async_trait::async_trait;
+use axum::Extension;
 use loco_rs::{
     app::{AppContext, Hooks, Initializer},
     bgworker::{BackgroundWorker, Queue},
     boot::{create_app, BootResult, StartMode},
     config::Config,
     controller::AppRoutes,
-    db::{self, truncate_table},
     environment::Environment,
     task::Tasks,
     Result,
 };
 use migration::Migrator;
-use std::path::Path;
+use std::{path::Path, sync::Arc};
+use tracing::info;
 
+use crate::common::settings::Settings;
 #[allow(unused_imports)]
 use crate::{controllers, tasks, workers::downloader::DownloadWorker};
 
@@ -49,6 +51,30 @@ impl Hooks for App {
         AppRoutes::with_default_routes() // controller routes below
             .add_route(controllers::logs::routes())
     }
+
+    async fn after_routes(router: axum::Router, ctx: &AppContext) -> Result<axum::Router> {
+        let settings_json = ctx
+            .config
+            .settings
+            .as_ref()
+            .expect("Settings must be present in context");
+        let settings = Settings::from_json(settings_json)?;
+        info!(
+            "Registering with elasticsearch url: {:?}",
+            settings.elasticsearch_url
+        );
+        let elasticsearch_url = settings
+            .elasticsearch_url
+            .as_deref()
+            .expect("Elasticsearch URL must be set");
+        let elasticsearch_service =
+            crate::services::elasticsearch::ElasticsearchService::new(elasticsearch_url);
+        let elasticsearch_extension = Arc::new(elasticsearch_service.unwrap());
+        info!("Elasticsearch service registered");
+
+        Ok(router.layer(Extension(elasticsearch_extension)))
+    }
+
     async fn connect_workers(ctx: &AppContext, queue: &Queue) -> Result<()> {
         queue.register(DownloadWorker::build(ctx)).await?;
         Ok(())
@@ -58,10 +84,10 @@ impl Hooks for App {
     fn register_tasks(tasks: &mut Tasks) {
         // tasks-inject (do not remove)
     }
-    async fn truncate(ctx: &AppContext) -> Result<()> {
+    async fn truncate(_ctx: &AppContext) -> Result<()> {
         Ok(())
     }
-    async fn seed(ctx: &AppContext, base: &Path) -> Result<()> {
+    async fn seed(_ctx: &AppContext, _base: &Path) -> Result<()> {
         Ok(())
     }
 }

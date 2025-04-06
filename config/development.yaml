@@ -99,3 +99,6 @@ auth:
     secret: KogPIwtLhzZVq9M6bJdr
     # Token expiration time in seconds
     expiration: 604800 # 7 days
+
+settings:
+  elasticsearch_url: http://localhost:9200
