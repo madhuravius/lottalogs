@@ -17,8 +17,13 @@ make install
 ### Start the Application
 To start the application and its dependencies, run:
 ```bash
+# start the backend
 make start
+# start the frontend
+make start-frontend
 ```
+
+You should really only have to operate out of the frontend.
 
 ### Run Tests
 To execute the test suite, run:

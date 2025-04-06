@@ -15,7 +15,7 @@ const Logs = () => {
 
   return (
     <div className="flex">
-      <div className="w-screen h-[calc(100vh-150px)] p-2 m-4 rounded-md shadow-[0px_0px_15px_0px_rgba(34,_197,_94,_0.5)]">
+      <div className="w-screen h-[calc(100vh-155px)] p-4 m-5 rounded-md shadow-[0px_0px_15px_0px_rgba(34,_197,_94,_0.5)]">
         <ScrollFollow
           startFollowing={true}
           render={({ follow, onScroll }) => (
