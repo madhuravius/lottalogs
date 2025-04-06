@@ -1,6 +1,8 @@
 use elasticsearch::{http::transport::Transport, Elasticsearch, Error};
 use tracing::info;
 
+use crate::views::logs::LogsQueryParameters;
+
 pub struct ElasticsearchService {
     client: Elasticsearch,
 }
@@ -32,16 +34,21 @@ impl ElasticsearchService {
         }
     }
 
-    pub async fn search(&self, index: &str) -> Result<serde_json::Value, Error> {
+    pub async fn search(&self, params: LogsQueryParameters) -> Result<serde_json::Value, Error> {
         let query = serde_json::json!({
             "query": {
-                "match_all": {}
-            }
+                "match": {
+                    "message": {
+                        "query": format!("{}{}{}", "*", params.search_text.unwrap_or_default(), "*")
+                    }
+                }
+            },
+            "size": params.size,
         });
 
         let response = self
             .client
-            .search(elasticsearch::SearchParts::Index(&[index]))
+            .search(elasticsearch::SearchParts::Index(&[params.index.unwrap().as_str()]))
             .body(query)
             .send()
             .await?;

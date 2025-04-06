@@ -7,7 +7,7 @@ use tracing::error;
 use axum::{debug_handler, extract::Query, Extension};
 use loco_rs::prelude::*;
 
-use crate::{services::elasticsearch::ElasticsearchService, views::LogsQueryParameters};
+use crate::{services::elasticsearch::ElasticsearchService, views::logs::LogsQueryParameters};
 
 #[debug_handler]
 pub async fn index(
@@ -16,7 +16,10 @@ pub async fn index(
     Query(params): Query<LogsQueryParameters>,
 ) -> Result<Response> {
     let params = params.with_defaults();
-    let search_response = match e.search(params.index.as_deref().unwrap()).await {
+    let search_response = match e
+        .search(params)
+        .await
+    {
         Ok(response) => response,
         Err(err) => {
             error!("Failed to query Elasticsearch: {:?}", err);

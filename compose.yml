@@ -1,9 +1,11 @@
 version: '3.8'
 services:
   app:
-    image: alpine
-    command: sh -c 'while true; do echo "$(date) - Hello from the app!" >> /app-logs/app.log; sleep 5; done'
-    container_name: alpine
+    build:
+      dockerfile: Dockerfile.flog
+      context: scripts/flog
+    command: ["flog", "-l", "-d", "5", "-s", "5", "-w", "-o", "/app-logs/app.log"]
+    container_name: app 
     volumes:
       - app-logs:/app-logs
 
@@ -13,7 +15,7 @@ services:
     environment:
       - VECTOR_CONFIG_TOML=/etc/vector/vector.toml
     volumes:
-      - app-logs:/var/log/app
+      - app-logs:/var/log/app:ro
       - ./vector/vector.toml:/etc/vector/vector.toml:ro
     tmpfs:
       - /etc/vector
