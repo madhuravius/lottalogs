@@ -2,6 +2,9 @@
 
 App to view aggregated logs quickly without using k9s or equivalent. I wanted something
 with the simplicity of something like [Papertrail](https://www.papertrail.com/) but was unable to find it.
+Screenshot of functionality visible below:
+
+![LottaLogs screenshot](docs/images/proof.png)
 
 To get started, run `make` to view help.
 
