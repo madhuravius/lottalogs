@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct LogResponse {
     pub message: String,
     pub host: String,
     pub index: String,
-    pub timestamp: bool,
+    pub timestamp: String,
     pub id: String,
 }
 

@@ -16,10 +16,7 @@ pub async fn index(
     Query(params): Query<LogsQueryParameters>,
 ) -> Result<Response> {
     let params = params.with_defaults();
-    let search_response = match e
-        .search(params)
-        .await
-    {
+    let search_response = match e.search(params).await {
         Ok(response) => response,
         Err(err) => {
             error!("Failed to query Elasticsearch: {:?}", err);
