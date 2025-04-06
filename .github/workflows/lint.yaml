@@ -54,6 +54,8 @@ jobs:
           args: --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery -W rust-2018-idioms
 
   validate-dependabot:
+    name: Validate dependabot
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: marocchino/validate-dependabot@v3
