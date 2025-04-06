@@ -1,0 +1,9 @@
+FROM alpine:latest
+RUN apk add bash wget gcompat
+RUN wget https://github.com/mingrammer/flog/releases/download/v0.4.4/flog_0.4.4_linux_amd64.tar.gz
+RUN tar -xvf flog_0.4.4_linux_amd64.tar.gz
+RUN chmod +x flog
+RUN mv flog /usr/local/bin/flog
+COPY run.sh run.sh
+
+ENTRYPOINT ["/run.sh"]

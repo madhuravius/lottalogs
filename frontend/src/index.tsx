@@ -1,8 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { LocoSplash } from "./LocoSplash";
 
 import "./index.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ActionBar from "./components/ActionBar";
+import Logs from "./components/Logs";
+import { LogsProvider } from "./contexts/LogsContext";
+
+const queryClient = new QueryClient();
 
 const root = document.getElementById("root");
 
@@ -12,6 +17,11 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <LocoSplash />
+    <QueryClientProvider client={queryClient}>
+      <LogsProvider>
+        <Logs />
+        <ActionBar />
+      </LogsProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
 );
