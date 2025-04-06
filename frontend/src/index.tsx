@@ -19,8 +19,8 @@ ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <LogsProvider>
-        <ActionBar />
         <Logs />
+        <ActionBar />
       </LogsProvider>
     </QueryClientProvider>
   </React.StrictMode>,

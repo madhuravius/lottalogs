@@ -47,8 +47,8 @@ const ActionBar = () => {
   });
 
   return (
-    <div className="flex items-center p-4 bg-base-200">
-      <div className="ml-4 flex items-center absolute top-2 right-2">
+    <div className="flex items-center pr-4 pt-2 pl-4 bg-base-200">
+      <div className="ml-4 flex items-center absolute bottom-2 right-2">
         <div className="inline-grid *:[grid-area:1/1] mr-2">
           <div
             className={`status ${healthyBackend ? "status-success" : "status-error"} animate-ping`}
@@ -62,13 +62,14 @@ const ActionBar = () => {
         </span>
       </div>
       <div className="flex-shrink-0 pointer-events-none select-none">
-        <img src={LogoFull} alt="Logo" className="h-12 w-12 m-2 rounded-md" />
+        <img src={LogoFull} alt="Logo" className="h-12 w-12 mb-2 rounded-md" />
         <p className="text-xs text-gray-500 text-center">Lotta Logs</p>
       </div>
       <input
+        autoFocus
         type="text"
         placeholder="Search logs..."
-        className="input input-bordered w-full ml-4"
+        className="input input-bordered w-full ml-4 input-sm"
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
       />

@@ -1,6 +1,7 @@
 # LottaLogs
 
-LottaLogs is a logging application designed to simplify log management and analysis.
+App to view aggregated logs quickly without using k9s or equivalent. I wanted something
+with the simplicity of something like [Papertrail](https://www.papertrail.com/) but was unable to find it.
 
 To get started, run `make` to view help.
 
