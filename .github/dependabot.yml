@@ -1,4 +1,9 @@
 version: 2
+registries:
+  npm-registry:
+    type: npm-registry
+    url: https://registry.npmjs.org
+
 updates:
   - package-ecosystem: "cargo"
     directory: "/"
@@ -9,8 +14,7 @@ updates:
     schedule:
       interval: "weekly"
     registries:
-      - type: "npm"
-        url: "https://registry.npmjs.org"
+      - npm-registry
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
