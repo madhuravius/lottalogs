@@ -15,10 +15,11 @@ jobs:
   biome:
     name: Check Biome
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./frontend
     permissions:
       contents: read
-
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -28,13 +29,10 @@ jobs:
           node-version: '22.x'
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        working-directory: ./frontend
       - name: Install frontend dependencies
         run: pnpm install
-        working-directory: ./frontend
       - name: Lint
         run: pnpm lint 
-        working-directory: ./frontend
 
 
   rustfmt:
