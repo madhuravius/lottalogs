@@ -25,11 +25,10 @@ jobs:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
       - name: Setup Rust cache
         uses: Swatinem/rust-cache@v2
-      - name: Run cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --all-features --all
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Generate code coverage
+        run: cargo llvm-cov --all-features
 
   test-ts:
     name: Test TypeScript Frontend

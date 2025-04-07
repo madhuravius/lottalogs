@@ -7,12 +7,12 @@ use tracing::error;
 use axum::{debug_handler, extract::Query, Extension};
 use loco_rs::prelude::*;
 
-use crate::{services::elasticsearch::ElasticsearchService, views::logs::LogsQueryParameters};
+use crate::{services::elasticsearch::ElasticsearchServiceTrait, views::logs::LogsQueryParameters};
 
 #[debug_handler]
 pub async fn index(
     State(_ctx): State<AppContext>,
-    Extension(e): Extension<Arc<ElasticsearchService>>,
+    Extension(e): Extension<Arc<dyn ElasticsearchServiceTrait>>,
     Query(params): Query<LogsQueryParameters>,
 ) -> Result<Response> {
     let params = params.with_defaults();
@@ -30,7 +30,7 @@ pub async fn index(
 #[debug_handler]
 pub async fn status(
     State(_ctx): State<AppContext>,
-    Extension(e): Extension<Arc<ElasticsearchService>>,
+    Extension(e): Extension<Arc<dyn ElasticsearchServiceTrait>>,
 ) -> Result<Response> {
     let _ = e.health_check().await;
     format::render().json(HashMap::from([("status", "healthy")]))
@@ -41,4 +41,21 @@ pub fn routes() -> Routes {
         .prefix("api/logs/")
         .add("/status", get(status))
         .add("/", get(index))
+}
+
+#[cfg(test)]
+mod tests {
+    use loco_rs::prelude::request;
+
+    use crate::{app::App, services::elasticsearch::tests::mock_es_health_check};
+
+    #[tokio::test]
+    async fn can_get_logs_status() {
+        mock_es_health_check();
+        request::<App, _, _>(|request, _ctx| async move {
+            let res = request.get("/api/logs/status").await;
+            assert_eq!(res.status_code(), 200);
+        })
+        .await;
+    }
 }

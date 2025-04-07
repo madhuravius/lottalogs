@@ -96,3 +96,6 @@ auth:
     secret: Tnvp3XlH1Ovbf1CO00DN
     # Token expiration time in seconds
     expiration: 604800 # 7 days
+
+settings:
+  elasticsearch_url: http://not-real.localhost:9200

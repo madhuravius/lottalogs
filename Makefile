@@ -35,7 +35,7 @@ start-frontend: ## Start the frontend
 
 .PHONY: test
 test: ## Run tests
-	cargo test
+	cargo llvm-cov --all-features
 
 .PHONY: lint
 lint: ## Run linter

@@ -1,9 +1,20 @@
+use async_trait::async_trait;
 use elasticsearch::{http::transport::Transport, Elasticsearch, Error};
 use serde::Deserialize;
 use serde_json::json;
 use tracing::info;
 
+#[cfg(test)]
+use mockall::{automock, predicate::*};
+
 use crate::views::logs::{LogResponse, LogsQueryParameters};
+
+#[cfg_attr(test, automock)]
+#[async_trait]
+pub trait ElasticsearchServiceTrait: Send + Sync {
+    async fn health_check(&self) -> Result<(), Error>;
+    async fn search(&self, params: LogsQueryParameters) -> Result<Vec<LogResponse>, Error>;
+}
 
 pub struct ElasticsearchService {
     client: Elasticsearch,
@@ -51,13 +62,16 @@ impl ElasticsearchService {
         );
         Ok(Self { client })
     }
+}
 
+#[async_trait]
+impl ElasticsearchServiceTrait for ElasticsearchService {
     /// Checks the health of the Elasticsearch cluster.
     ///
     /// # Errors
     ///
     /// Returns an error if the health check fails.
-    pub async fn health_check(&self) -> Result<(), Error> {
+    async fn health_check(&self) -> Result<(), Error> {
         let response = self.client.ping().send().await?;
         if response.status_code().is_success() {
             info!("Elasticsearch is healthy!");
@@ -82,7 +96,7 @@ impl ElasticsearchService {
     /// # Panics
     ///
     /// This function will panic if the index parameter is `None`.
-    pub async fn search(&self, params: LogsQueryParameters) -> Result<Vec<LogResponse>, Error> {
+    async fn search(&self, params: LogsQueryParameters) -> Result<Vec<LogResponse>, Error> {
         let search_text = params.search_text.unwrap_or_default();
         let start_timestamp = params.start_timestamp.as_deref();
         let match_block = if search_text.is_empty() {
@@ -156,5 +170,17 @@ impl ElasticsearchService {
                 ),
             )))
         }
+    }
+}
+
+#[cfg(test)]
+pub mod tests {
+    use super::MockElasticsearchServiceTrait;
+
+    pub fn mock_es_health_check() -> MockElasticsearchServiceTrait {
+        let mut mock = MockElasticsearchServiceTrait::new();
+        mock.expect_health_check()
+            .returning(|| Ok(()));
+        mock
     }
 }
