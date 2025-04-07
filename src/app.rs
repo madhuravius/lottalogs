@@ -69,7 +69,8 @@ impl Hooks for App {
             .expect("Elasticsearch URL must be set");
         let elasticsearch_service =
             crate::services::elasticsearch::ElasticsearchService::new(elasticsearch_url);
-        let elasticsearch_extension: Arc<dyn ElasticsearchServiceTrait> = Arc::new(elasticsearch_service.unwrap());
+        let elasticsearch_extension: Arc<dyn ElasticsearchServiceTrait> =
+            Arc::new(elasticsearch_service.unwrap());
         info!("Elasticsearch service registered");
 
         Ok(router.layer(Extension(elasticsearch_extension)))

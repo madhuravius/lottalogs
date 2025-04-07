@@ -179,8 +179,7 @@ pub mod tests {
 
     pub fn mock_es_health_check() -> MockElasticsearchServiceTrait {
         let mut mock = MockElasticsearchServiceTrait::new();
-        mock.expect_health_check()
-            .returning(|| Ok(()));
+        mock.expect_health_check().returning(|| Ok(()));
         mock
     }
 }

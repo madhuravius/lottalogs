@@ -44,7 +44,7 @@ lint: ## Run linter
 
 .PHONY: format
 format: ## Format code
-	cargo fmt
+	cargo fmt --all
 	cd frontend && pnpm run lint:fix
 
 .PHONY: migrate
