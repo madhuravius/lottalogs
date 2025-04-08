@@ -107,7 +107,7 @@ describe("Logs Feature Integration", () => {
         expect(logViewer).not.toHaveTextContent("idx-1");
       },
       { timeout: 1000 },
-    ); // Give time for debounce
+    );
   });
 
   it("toggles wrap lines setting", async () => {

@@ -3,12 +3,12 @@ import { useState } from "react";
 import LogoFull from "../assets/logo-full.png";
 import { type LogEntry, useLogs } from "../contexts/LogsContext";
 import { useDebounce } from "../hooks/useDebounce";
-import { GithubIcon } from "./Icons";
+import { GithubIcon, PauseIcon, PlayIcon } from "./Icons";
 
 const ActionBar = () => {
   const [searchText, setSearchText] = useState("");
   const debouncedSearchText = useDebounce(searchText, 500);
-  const { setLogs, wrapLines, setWrapLines } = useLogs();
+  const { paused, setPaused, setLogs, wrapLines, setWrapLines } = useLogs();
   const [healthyBackend, setHealthyBackend] = useState<boolean>(true);
 
   useQuery({
@@ -26,7 +26,7 @@ const ActionBar = () => {
         setLogs([]);
       }
     },
-    enabled: true,
+    enabled: !paused,
     refetchInterval: 5000,
     refetchOnWindowFocus: true,
     staleTime: 4900,
@@ -52,9 +52,22 @@ const ActionBar = () => {
     retry: true,
   });
 
+  const togglePauseResume = () => {
+    setPaused(!paused);
+  };
+
   return (
     <div className="flex items-center pr-4 pt-2 pl-4 bg-base-200">
-      <div className="ml-4 flex items-center absolute bottom-0 right-1">
+      <div
+        className={`fixed w-screen text-center bottom-15 overflow-hidden mb-1 p-0 text-xs ${paused ? "text-yellow-300" : "text-green-300"}`}
+      >
+        {paused ? (
+          <span>&lt; Paused log streaming &gt;</span>
+        ) : (
+          <span>Streaming logs...</span>
+        )}
+      </div>
+      <div className="ml-4 flex items-center fixed bottom-0 right-1">
         <div className="inline-grid *:[grid-area:1/1] mr-2">
           <div
             className={`status ${healthyBackend ? "status-success" : "status-error"} animate-ping`}
@@ -75,10 +88,21 @@ const ActionBar = () => {
         />
         <p className="text-xs text-gray-500 text-center">Lotta Logs</p>
       </div>
+      <button
+        onClick={togglePauseResume}
+        className={`cursor-pointer p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ml-4 border-2 ${paused ? " border-green-300" : " border-yellow-300"}`}
+        title={paused ? "Resume queries" : "Pause queries"}
+      >
+        {paused ? (
+          <PlayIcon className="h-6 w-6 fill-green-300" />
+        ) : (
+          <PauseIcon className="h-6 w-6 fill-yellow-300" />
+        )}
+      </button>
       <input
         type="text"
         placeholder="Search logs..."
-        className="input input-bordered w-full ml-4 input-sm"
+        className="input input-bordered w-full ml-2 input-sm"
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
       />
