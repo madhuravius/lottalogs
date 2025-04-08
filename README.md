@@ -6,6 +6,11 @@ Screenshot of functionality visible below:
 
 ![LottaLogs screenshot](docs/images/proof.jpeg)
 
+Requirements to run:
+
+* An elasticsearch cluster/instance
+* Agents (ex: [Vector](https://vector.dev/)) that pipe documents into Elasticsearch
+
 To get started, run `make` to view help.
 
 ## Quickstart 
@@ -43,11 +48,21 @@ make format
 
 ## Common Issues
 
+### Better logging in tests
+
 For more tracing in tests, this line can be added with a `ctx` AppContext:
 
 ```rust
     let _ = logger::init::<App>(&ctx.config.logger);
 ```
+
+### Configs
+
+There are two configs that are meant to be adapted for use:
+
+* `scripts/vector/vector.toml` - not actually production ready, but easy for referencign with copy/paste and reuse.
+* `config/production.yaml` - not actually production ready, but has all the required values populated for reuse. Should copy paste this
+as a base and reuse it.
 
 ## Misc.
 
