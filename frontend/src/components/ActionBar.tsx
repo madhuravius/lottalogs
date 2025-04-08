@@ -98,7 +98,7 @@ const ActionBar = () => {
         target="_blank"
         rel="noreferrer"
       >
-        <GithubIcon />
+        <GithubIcon className={"w-6 h-6 ml-4"} />
       </a>
     </div>
   );
