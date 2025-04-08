@@ -4,7 +4,14 @@ App to view aggregated logs quickly without using k9s or equivalent. I wanted so
 with the simplicity of something like [Papertrail](https://www.papertrail.com/) but was unable to find it.
 Screenshot of functionality visible below:
 
-![LottaLogs screenshot](docs/images/proof.jpeg)
+![LottaLogs screenshot](docs/images/proof.png)
+
+Requirements to run:
+
+* An elasticsearch cluster/instance
+* Agents (ex: [Vector](https://vector.dev/)) that pipe documents into Elasticsearch
+* Something dumping logs to be viewed/consumed. Examples are generated from: [a configured flog container](./scripts/flog/Dockerfile.flog) 
+(this was done because [unresolved issue](https://github.com/mingrammer/flog/issues/10) and no similar tools found)
 
 To get started, run `make` to view help.
 
@@ -43,11 +50,21 @@ make format
 
 ## Common Issues
 
+### Better logging in tests
+
 For more tracing in tests, this line can be added with a `ctx` AppContext:
 
 ```rust
     let _ = logger::init::<App>(&ctx.config.logger);
 ```
+
+### Configs
+
+There are two configs that are meant to be adapted for use:
+
+* `scripts/vector/vector.toml` - not actually production ready, but easy for referencign with copy/paste and reuse.
+* `config/production.yaml` - not actually production ready, but has all the required values populated for reuse. Should copy paste this
+as a base and reuse it.
 
 ## Misc.
 

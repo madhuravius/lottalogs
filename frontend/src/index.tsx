@@ -19,8 +19,10 @@ ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <LogsProvider>
-        <Logs />
-        <ActionBar />
+        <div className="overscroll-none">
+          <Logs />
+          <ActionBar />
+        </div>
       </LogsProvider>
     </QueryClientProvider>
   </React.StrictMode>,

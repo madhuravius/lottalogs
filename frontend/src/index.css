@@ -5,6 +5,7 @@
 
 body {
   font-family: monospace;
+  overscroll-behavior: none;
 }
 
 .revert-tailwind {
@@ -20,5 +21,10 @@ body {
 }
 
 .wrapped-lines .log-part {
-  padding-right: 13px;
+  padding-right: 6.5px;
+  display: inline;
+}
+
+.log-part {
+  display: inline;
 }

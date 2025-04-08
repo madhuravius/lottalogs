@@ -9,6 +9,8 @@ export interface LogEntry {
 }
 
 type LogsContextType = {
+  paused: boolean;
+  setPaused: (paused: boolean) => void;
   logs: LogEntry[] | null;
   setLogs: (logs: LogEntry[] | null) => void;
   wrapLines: boolean;
@@ -18,11 +20,14 @@ type LogsContextType = {
 const LogsContext = createContext<LogsContextType | undefined>(undefined);
 
 export const LogsProvider = ({ children }: { children: ReactNode }) => {
+  const [paused, setPaused] = useState<boolean>(false);
   const [logs, setLogs] = useState<LogEntry[] | null>(null);
   const [wrapLines, setWrapLines] = useState<boolean>(false);
 
   return (
-    <LogsContext.Provider value={{ logs, setLogs, wrapLines, setWrapLines }}>
+    <LogsContext.Provider
+      value={{ paused, setPaused, logs, setLogs, wrapLines, setWrapLines }}
+    >
       {children}
     </LogsContext.Provider>
   );
