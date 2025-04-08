@@ -10,6 +10,8 @@ Requirements to run:
 
 * An elasticsearch cluster/instance
 * Agents (ex: [Vector](https://vector.dev/)) that pipe documents into Elasticsearch
+* Something dumping logs to be viewed/consumed. Examples are generated from: [an configured flog container](./scripts/flog/Dockerfile.flog) 
+(this was done because [unresolved issue](https://github.com/mingrammer/flog/issues/10) and no similar tools found)
 
 To get started, run `make` to view help.
 
