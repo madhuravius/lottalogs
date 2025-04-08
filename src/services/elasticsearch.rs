@@ -1,15 +1,11 @@
 use async_trait::async_trait;
 use elasticsearch::{http::transport::Transport, Elasticsearch, Error};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::info;
 
-#[cfg(test)]
-use mockall::{automock, predicate::*};
-
 use crate::views::logs::{LogResponse, LogsQueryParameters};
 
-#[cfg_attr(test, automock)]
 #[async_trait]
 pub trait ElasticsearchServiceTrait: Send + Sync {
     async fn health_check(&self) -> Result<(), Error>;
@@ -20,15 +16,15 @@ pub struct ElasticsearchService {
     client: Elasticsearch,
 }
 
-#[derive(Debug, Deserialize)]
-struct EsSource {
+#[derive(Debug, Deserialize, Serialize)]
+pub struct EsSource {
     message: String,
     host: String,
     timestamp: String,
 }
 
-#[derive(Debug, Deserialize)]
-struct EsHit {
+#[derive(Debug, Deserialize, Serialize)]
+pub struct EsHit {
     #[serde(rename = "_id")]
     id: String,
     #[serde(rename = "_index")]
@@ -37,13 +33,13 @@ struct EsHit {
     source: EsSource,
 }
 
-#[derive(Debug, Deserialize)]
-struct EsHits {
+#[derive(Debug, Deserialize, Serialize)]
+pub struct EsHits {
     hits: Vec<EsHit>,
 }
 
-#[derive(Debug, Deserialize)]
-struct EsResponse {
+#[derive(Debug, Deserialize, Serialize)]
+pub struct EsResponse {
     hits: EsHits,
 }
 
@@ -175,11 +171,46 @@ impl ElasticsearchServiceTrait for ElasticsearchService {
 
 #[cfg(test)]
 pub mod tests {
-    use super::MockElasticsearchServiceTrait;
+    use httptest::ServerBuilder;
+    use httptest::{matchers::*, responders::*, Expectation, Server};
+    use serde_json::json;
 
-    pub fn mock_es_health_check() -> MockElasticsearchServiceTrait {
-        let mut mock = MockElasticsearchServiceTrait::new();
-        mock.expect_health_check().returning(|| Ok(()));
-        mock
+    use super::{EsHit, EsHits, EsResponse, EsSource};
+
+    pub fn mock_es_search_success(uri: String) -> Server {
+        let server = ServerBuilder::new()
+            .bind_addr(([127, 0, 0, 1], 9201).into())
+            .run()
+            .unwrap();
+        server.expect(
+            Expectation::matching(request::method_path("POST", uri)).respond_with(json_encoded(
+                json!(EsResponse {
+                    hits: EsHits {
+                        hits: vec![EsHit {
+                            id: "1".to_string(),
+                            index: "logs".to_string(),
+                            source: EsSource {
+                                message: "Test log message".to_string(),
+                                host: "localhost".to_string(),
+                                timestamp: "2023-10-01T00:00:00Z".to_string(),
+                            },
+                        }],
+                    },
+                }),
+            )),
+        );
+        server
+    }
+
+    pub fn mock_es_search_failure() -> Server {
+        let server = ServerBuilder::new()
+            .bind_addr(([127, 0, 0, 1], 9201).into())
+            .run()
+            .unwrap();
+        server.expect(
+            Expectation::matching(request::method_path("POST", "/_search"))
+                .respond_with(status_code(500)),
+        );
+        server
     }
 }

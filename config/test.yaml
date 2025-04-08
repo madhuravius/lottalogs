@@ -3,7 +3,7 @@
 # Application logging configuration
 logger:
   # Enable or disable logging.
-  enable: false
+  enable: true
   # Enable pretty backtrace (sets RUST_BACKTRACE=1)
   pretty_backtrace: true
   # Log level, options: trace, debug, info, warn or error.
@@ -32,6 +32,10 @@ server:
         uri: "/"
         path: "frontend/dist"
       fallback: "frontend/dist/index.html"
+    catch_panic:
+      enable: true
+    logger:
+      enable: true
 
 # Worker Configuration
 workers:
@@ -72,7 +76,7 @@ database:
   # Database connection URI
   uri: {{ get_env(name="DATABASE_URL", default="sqlite://lottalogs_test.sqlite?mode=rwc") }}
   # When enabled, the sql query will be logged.
-  enable_logging: false
+  enable_logging: true
   # Set the timeout duration when acquiring a connection.
   connect_timeout: {{ get_env(name="DB_CONNECT_TIMEOUT", default="500") }}
   # Set the idle duration before closing a connection.
@@ -98,4 +102,4 @@ auth:
     expiration: 604800 # 7 days
 
 settings:
-  elasticsearch_url: http://not-real.localhost:9200
+  elasticsearch_url: http://localhost:9201
