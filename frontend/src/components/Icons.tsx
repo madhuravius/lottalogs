@@ -11,7 +11,9 @@ export const GithubIcon = ({
   </svg>
 );
 
-export const PauseIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+export const PauseIcon = ({
+  className = "w-6 h-6",
+}: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
