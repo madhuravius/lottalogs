@@ -15,7 +15,7 @@ services:
       - VECTOR_CONFIG_TOML=/etc/vector/vector.toml
     volumes:
       - app-logs:/var/log/app:ro
-      - ./vector/vector.toml:/etc/vector/vector.toml:ro
+      - ./scripts/vector/vector.toml:/etc/vector/vector.toml:ro
     tmpfs:
       - /etc/vector
     depends_on:
