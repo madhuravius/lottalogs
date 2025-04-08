@@ -12,8 +12,33 @@ env:
   TOOLCHAIN_PROFILE: minimal
 
 jobs:
+  biome:
+    name: Check Biome
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Install frontend dependencies
+        run: pnpm install
+      - name: Lint
+        run: pnpm lint 
+
+
   rustfmt:
-    name: Check Style
+    name: Check Rust Fmt
     runs-on: ubuntu-latest
 
     permissions:

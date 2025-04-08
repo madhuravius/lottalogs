@@ -1,23 +1,30 @@
+use async_trait::async_trait;
 use elasticsearch::{http::transport::Transport, Elasticsearch, Error};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::info;
 
 use crate::views::logs::{LogResponse, LogsQueryParameters};
 
+#[async_trait]
+pub trait ElasticsearchServiceTrait: Send + Sync {
+    async fn health_check(&self) -> Result<(), Error>;
+    async fn search(&self, params: LogsQueryParameters) -> Result<Vec<LogResponse>, Error>;
+}
+
 pub struct ElasticsearchService {
     client: Elasticsearch,
 }
 
-#[derive(Debug, Deserialize)]
-struct EsSource {
+#[derive(Debug, Deserialize, Serialize)]
+pub struct EsSource {
     message: String,
     host: String,
     timestamp: String,
 }
 
-#[derive(Debug, Deserialize)]
-struct EsHit {
+#[derive(Debug, Deserialize, Serialize)]
+pub struct EsHit {
     #[serde(rename = "_id")]
     id: String,
     #[serde(rename = "_index")]
@@ -26,13 +33,13 @@ struct EsHit {
     source: EsSource,
 }
 
-#[derive(Debug, Deserialize)]
-struct EsHits {
+#[derive(Debug, Deserialize, Serialize)]
+pub struct EsHits {
     hits: Vec<EsHit>,
 }
 
-#[derive(Debug, Deserialize)]
-struct EsResponse {
+#[derive(Debug, Deserialize, Serialize)]
+pub struct EsResponse {
     hits: EsHits,
 }
 
@@ -51,13 +58,16 @@ impl ElasticsearchService {
         );
         Ok(Self { client })
     }
+}
 
+#[async_trait]
+impl ElasticsearchServiceTrait for ElasticsearchService {
     /// Checks the health of the Elasticsearch cluster.
     ///
     /// # Errors
     ///
     /// Returns an error if the health check fails.
-    pub async fn health_check(&self) -> Result<(), Error> {
+    async fn health_check(&self) -> Result<(), Error> {
         let response = self.client.ping().send().await?;
         if response.status_code().is_success() {
             info!("Elasticsearch is healthy!");
@@ -82,7 +92,7 @@ impl ElasticsearchService {
     /// # Panics
     ///
     /// This function will panic if the index parameter is `None`.
-    pub async fn search(&self, params: LogsQueryParameters) -> Result<Vec<LogResponse>, Error> {
+    async fn search(&self, params: LogsQueryParameters) -> Result<Vec<LogResponse>, Error> {
         let search_text = params.search_text.unwrap_or_default();
         let start_timestamp = params.start_timestamp.as_deref();
         let match_block = if search_text.is_empty() {
@@ -156,5 +166,51 @@ impl ElasticsearchService {
                 ),
             )))
         }
+    }
+}
+
+#[cfg(test)]
+pub mod tests {
+    use httptest::ServerBuilder;
+    use httptest::{matchers::*, responders::*, Expectation, Server};
+    use serde_json::json;
+
+    use super::{EsHit, EsHits, EsResponse, EsSource};
+
+    pub fn mock_es_search_success(uri: String) -> Server {
+        let server = ServerBuilder::new()
+            .bind_addr(([127, 0, 0, 1], 9201).into())
+            .run()
+            .unwrap();
+        server.expect(
+            Expectation::matching(request::method_path("POST", uri)).respond_with(json_encoded(
+                json!(EsResponse {
+                    hits: EsHits {
+                        hits: vec![EsHit {
+                            id: "1".to_string(),
+                            index: "logs".to_string(),
+                            source: EsSource {
+                                message: "Test log message".to_string(),
+                                host: "localhost".to_string(),
+                                timestamp: "2023-10-01T00:00:00Z".to_string(),
+                            },
+                        }],
+                    },
+                }),
+            )),
+        );
+        server
+    }
+
+    pub fn mock_es_search_failure() -> Server {
+        let server = ServerBuilder::new()
+            .bind_addr(([127, 0, 0, 1], 9201).into())
+            .run()
+            .unwrap();
+        server.expect(
+            Expectation::matching(request::method_path("POST", "/_search"))
+                .respond_with(status_code(500)),
+        );
+        server
     }
 }

@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use axum::Extension;
 use loco_rs::{
     app::{AppContext, Hooks, Initializer},
-    bgworker::{BackgroundWorker, Queue},
+    bgworker::Queue,
     boot::{create_app, BootResult, StartMode},
     config::Config,
     controller::AppRoutes,
@@ -14,9 +14,9 @@ use migration::Migrator;
 use std::{path::Path, sync::Arc};
 use tracing::info;
 
-use crate::common::settings::Settings;
+use crate::{common::settings::Settings, services::elasticsearch::ElasticsearchServiceTrait};
 #[allow(unused_imports)]
-use crate::{controllers, tasks, workers::downloader::DownloadWorker};
+use crate::{controllers, tasks};
 
 pub struct App;
 #[async_trait]
@@ -69,14 +69,14 @@ impl Hooks for App {
             .expect("Elasticsearch URL must be set");
         let elasticsearch_service =
             crate::services::elasticsearch::ElasticsearchService::new(elasticsearch_url);
-        let elasticsearch_extension = Arc::new(elasticsearch_service.unwrap());
+        let elasticsearch_extension: Arc<dyn ElasticsearchServiceTrait> =
+            Arc::new(elasticsearch_service.unwrap());
         info!("Elasticsearch service registered");
 
         Ok(router.layer(Extension(elasticsearch_extension)))
     }
 
-    async fn connect_workers(ctx: &AppContext, queue: &Queue) -> Result<()> {
-        queue.register(DownloadWorker::build(ctx)).await?;
+    async fn connect_workers(_ctx: &AppContext, _queue: &Queue) -> Result<()> {
         Ok(())
     }
 

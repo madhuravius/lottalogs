@@ -35,16 +35,17 @@ start-frontend: ## Start the frontend
 
 .PHONY: test
 test: ## Run tests
-	cargo test
+	cargo llvm-cov --all-features
 
 .PHONY: lint
 lint: ## Run linter
+	cargo fmt --all -- --check
 	cargo clippy --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery -W rust-2018-idioms
 	cd frontend && pnpm run lint
 
 .PHONY: format
 format: ## Format code
-	cargo fmt
+	cargo fmt --all
 	cd frontend && pnpm run lint:fix
 
 .PHONY: migrate
