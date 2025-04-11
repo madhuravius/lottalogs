@@ -17,7 +17,7 @@ const Logs = () => {
     setIsAtTop,
   } = useLogs();
 
-  const logText = logs?.map
+  const logText = logs?.length
     ? logs
         ?.map(
           (log: Message) =>
@@ -65,6 +65,7 @@ const Logs = () => {
                 enableHotKeys
                 enableSearch={false}
                 follow={follow}
+                scrollFollow={isAtBottom}
                 onScroll={(scrollState) => {
                   onScroll(scrollState);
                   const { scrollTop, scrollHeight, clientHeight } = scrollState;
@@ -73,14 +74,16 @@ const Logs = () => {
                   const isAtTop = scrollTop === 0;
                   if (isAtBottom) {
                     setIsAtBottom(true);
+                    setIsAtTop(false);
                     setPaused(false);
                   } else if (isAtTop) {
                     setIsAtBottom(false);
-                    setIsAtTop(false);
+                    setIsAtTop(true);
                     setPaused(false);
-                  } else if (!isAtBottom) {
+                  } else if (!isAtBottom && !isAtTop) {
                     setPaused(true);
                     setIsAtBottom(false);
+                    setIsAtTop(false);
                   }
                 }}
                 selectableLines

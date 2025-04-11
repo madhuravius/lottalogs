@@ -20,33 +20,37 @@ const server = setupServer(
     const searchText = url.searchParams.get("search_text");
 
     if (searchText === "error") {
-      return Response.json([
+      return Response.json({
+        messages: [
+          {
+            message: "Error in system",
+            host: "host-1",
+            index: "error-1",
+            timestamp: "2023-01-01T00:00:00Z",
+            id: "1",
+          },
+        ],
+      });
+    }
+
+    return Response.json({
+      messages: [
         {
-          message: "Error in system",
+          message: "Log message 1",
           host: "host-1",
-          index: "error-1",
+          index: "idx-1",
           timestamp: "2023-01-01T00:00:00Z",
           id: "1",
         },
-      ]);
-    }
-
-    return Response.json([
-      {
-        message: "Log message 1",
-        host: "host-1",
-        index: "idx-1",
-        timestamp: "2023-01-01T00:00:00Z",
-        id: "1",
-      },
-      {
-        message: "Log message 2",
-        host: "host-2",
-        index: "idx-2",
-        timestamp: "2023-01-02T00:00:00Z",
-        id: "2",
-      },
-    ]);
+        {
+          message: "Log message 2",
+          host: "host-2",
+          index: "idx-2",
+          timestamp: "2023-01-02T00:00:00Z",
+          id: "2",
+        },
+      ],
+    });
   }),
 
   http.get("/api/logs/status", () => {

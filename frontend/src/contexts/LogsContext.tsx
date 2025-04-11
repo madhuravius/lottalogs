@@ -1,4 +1,11 @@
-import { type ReactNode, createContext, useContext, useState } from "react";
+import {
+  Dispatch,
+  type ReactNode,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from "react";
 
 export interface LogResponse {
   messages: Message[];
@@ -15,15 +22,15 @@ export interface Message {
 
 type LogsContextType = {
   paused: boolean;
-  setPaused: (paused: boolean) => void;
+  setPaused: Dispatch<SetStateAction<boolean>>;
   logs: Message[] | null;
-  setLogs: (logs: Message[] | null) => void;
+  setLogs: Dispatch<SetStateAction<Message[]>>;
   wrapLines: boolean;
-  setWrapLines: (wrap: boolean) => void;
+  setWrapLines: Dispatch<SetStateAction<boolean>>;
   isAtBottom: boolean;
-  setIsAtBottom: (isAtBottom: boolean) => void;
+  setIsAtBottom: Dispatch<SetStateAction<boolean>>;
   isAtTop: boolean;
-  setIsAtTop: (isAtTop: boolean) => void;
+  setIsAtTop: Dispatch<SetStateAction<boolean>>;
 };
 
 const LogsContext = createContext<LogsContextType | undefined>(undefined);
@@ -32,7 +39,7 @@ export const LogsProvider = ({ children }: { children: ReactNode }) => {
   const [paused, setPaused] = useState<boolean>(false);
   const [isAtTop, setIsAtTop] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState<boolean>(true);
-  const [logs, setLogs] = useState<Message[] | null>(null);
+  const [logs, setLogs] = useState<Message[]>([]);
   const [wrapLines, setWrapLines] = useState<boolean>(false);
 
   return (

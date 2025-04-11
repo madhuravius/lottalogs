@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import LogoFull from "../assets/logo-full.png";
-import { LogResponse, useLogs } from "../contexts/LogsContext";
+import { LogResponse, Message, useLogs } from "../contexts/LogsContext";
 import { useDebounce } from "../hooks/useDebounce";
 import { GithubIcon, PauseIcon, PlayIcon } from "./Icons";
 
@@ -9,45 +9,67 @@ const ActionBar = () => {
   const [searchText, setSearchText] = useState("");
   const [totalResults, setTotalResults] = useState(0);
   const debouncedSearchText = useDebounce(searchText, 500);
-  const { paused, setPaused, setLogs, wrapLines, setWrapLines } = useLogs();
+  const { paused, setPaused, logs, setLogs, wrapLines, setWrapLines, isAtTop } =
+    useLogs();
   const [healthyBackend, setHealthyBackend] = useState<boolean>(true);
-  const [minTimestamp, setMinTimestamp] = useState<string | undefined>();
-  const [maxTimestamp, setMaxTimestamp] = useState<string | undefined>();
+  const [maxTimestamp, setMaxTimestamp] = useState<string>(
+    new Date().toISOString(),
+  );
 
-  const fetchLogs = async () => {
-    try {
-      let url = `/api/logs?search_text=${encodeURIComponent(searchText)}`;
-      if (minTimestamp) {
-        url += `&min_timestamp=${minTimestamp}`;
-      }
-      const res = await fetch(url);
-      const data: LogResponse = await res.json();
-      setLogs(data.messages || []);
-      setTotalResults(data.total);
-      return data;
-    } catch (error) {
-      console.error("Error fetching logs:", error);
-      setLogs([]);
+  useEffect(() => {
+    setLogs([]);
+  }, [debouncedSearchText]);
+
+  const fetchLogData = async (): Promise<LogResponse> => {
+    let url = `/api/logs?search_text=${encodeURIComponent(debouncedSearchText)}`;
+    if (isAtTop) {
+      const likelyMaxTimestamp =
+        logs?.[logs?.length - 1]?.timestamp || maxTimestamp;
+      setMaxTimestamp(likelyMaxTimestamp);
+      url += `&max_timestamp=${likelyMaxTimestamp}`;
     }
+
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    const data: LogResponse = await res.json();
+    return data;
   };
 
-  useQuery({
-    queryKey: ["logs", debouncedSearchText],
-    queryFn: () => fetchLogs(),
-    enabled: false,
+  const { data } = useQuery<LogResponse, Error>({
+    queryKey: ["logs", debouncedSearchText, maxTimestamp],
+    queryFn: () => fetchLogData(),
+    enabled: !paused,
+    refetchInterval: paused ? false : 1000,
+    placeholderData: (previousData) => previousData,
   });
 
   useEffect(() => {
-    if (!paused) {
-      fetchLogs();
+    if (data?.messages) {
+      const newMessages = data.messages;
+
+      setLogs((prevLogs: Message[]) => {
+        const currentLogs = prevLogs || [];
+        const logMap = new Map<string, Message>();
+
+        currentLogs.forEach((log: Message) => logMap.set(log.id, log));
+        newMessages.forEach((log: Message) => logMap.set(log.id, log));
+
+        const combinedLogs = Array.from(logMap.values());
+        combinedLogs
+          .sort(
+            (a, b) =>
+              new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+          )
+          .reverse();
+
+        return combinedLogs;
+      });
+
+      setTotalResults(data?.total);
     }
-
-    const fetchLogsIntervalId = !paused ? setInterval(fetchLogs, 1000) : null;
-
-    return () => {
-      if (fetchLogsIntervalId) clearInterval(fetchLogsIntervalId);
-    };
-  }, [paused, debouncedSearchText, minTimestamp, maxTimestamp]);
+  }, [data, setLogs, setTotalResults]);
 
   useQuery({
     queryKey: ["backendHealth"],
@@ -81,7 +103,9 @@ const ActionBar = () => {
         {paused ? (
           <span>&lt; Paused log streaming &gt;</span>
         ) : (
-          <span>Streaming logs...</span>
+          <>
+            <span>Streaming logs</span>
+          </>
         )}
       </div>
       {!!totalResults && (

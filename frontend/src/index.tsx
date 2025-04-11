@@ -2,12 +2,29 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import "./index.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import ActionBar from "./components/ActionBar";
 import Logs from "./components/Logs";
 import { LogsProvider } from "./contexts/LogsContext";
 
-const queryClient = new QueryClient();
+const localStoragePersister = createSyncStoragePersister({
+  storage: window.localStorage,
+});
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 1000 * 60 * 60 * 24, // 24 hour cache
+    },
+  },
+});
+
+const persistOptions = {
+  persister: localStoragePersister,
+  maxAge: 1000 * 60 * 60 * 24, // 24 hours
+};
 
 const root = document.getElementById("root");
 
@@ -17,13 +34,16 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={persistOptions}
+    >
       <LogsProvider>
         <div className="overscroll-none">
           <Logs />
           <ActionBar />
         </div>
       </LogsProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   </React.StrictMode>,
 );
