@@ -4,12 +4,12 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::info;
 
-use crate::views::logs::{LogResponse, LogsQueryParameters};
+use crate::views::logs::{LogResponse, LogsQueryParameters, Message};
 
 #[async_trait]
 pub trait ElasticsearchServiceTrait: Send + Sync {
     async fn health_check(&self) -> Result<(), Error>;
-    async fn search(&self, params: LogsQueryParameters) -> Result<Vec<LogResponse>, Error>;
+    async fn search(&self, params: LogsQueryParameters) -> Result<LogResponse, Error>;
 }
 
 pub struct ElasticsearchService {
@@ -34,8 +34,15 @@ pub struct EsHit {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+pub struct EsHitsTotal {
+    value: u64,
+    relation: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct EsHits {
     hits: Vec<EsHit>,
+    total: EsHitsTotal,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -92,9 +99,10 @@ impl ElasticsearchServiceTrait for ElasticsearchService {
     /// # Panics
     ///
     /// This function will panic if the index parameter is `None`.
-    async fn search(&self, params: LogsQueryParameters) -> Result<Vec<LogResponse>, Error> {
+    async fn search(&self, params: LogsQueryParameters) -> Result<LogResponse, Error> {
         let search_text = params.search_text.unwrap_or_default();
-        let start_timestamp = params.start_timestamp.as_deref();
+        let min_timestamp = params.min_timestamp.as_deref();
+        let max_timestamp = params.max_timestamp.as_deref();
         let match_block = if search_text.is_empty() {
             json!({ "match_all": {} })
         } else {
@@ -110,7 +118,8 @@ impl ElasticsearchServiceTrait for ElasticsearchService {
         filter_clauses.push(json!({
             "range": {
                 "timestamp": {
-                    "gt": start_timestamp
+                    "gt": min_timestamp,
+                    "lt": max_timestamp,
                 }
             }
         }));
@@ -143,11 +152,11 @@ impl ElasticsearchServiceTrait for ElasticsearchService {
 
         if response.status_code().is_success() {
             let es_response = response.json::<EsResponse>().await?;
-            let log_responses: Vec<LogResponse> = es_response
+            let log_responses: Vec<Message> = es_response
                 .hits
                 .hits
                 .into_iter()
-                .map(|hit| LogResponse {
+                .map(|hit| Message {
                     message: hit.source.message,
                     host: hit.source.host,
                     index: hit.index,
@@ -156,7 +165,10 @@ impl ElasticsearchServiceTrait for ElasticsearchService {
                 })
                 .collect();
 
-            Ok(log_responses)
+            Ok(LogResponse {
+                messages: log_responses,
+                total: es_response.hits.total.value,
+            })
         } else {
             Err(elasticsearch::Error::from(std::io::Error::new(
                 std::io::ErrorKind::Other,
@@ -175,7 +187,7 @@ pub mod tests {
     use httptest::{matchers::*, responders::*, Expectation, Server};
     use serde_json::json;
 
-    use super::{EsHit, EsHits, EsResponse, EsSource};
+    use super::{EsHit, EsHits, EsHitsTotal, EsResponse, EsSource};
 
     pub fn mock_es_search_success(uri: String) -> Server {
         let server = ServerBuilder::new()
@@ -195,6 +207,10 @@ pub mod tests {
                                 timestamp: "2023-10-01T00:00:00Z".to_string(),
                             },
                         }],
+                        total: EsHitsTotal {
+                            value: 1,
+                            relation: "eq".to_string(),
+                        },
                     },
                 }),
             )),

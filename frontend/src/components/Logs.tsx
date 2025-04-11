@@ -1,6 +1,5 @@
 import { LazyLog, ScrollFollow } from "@melloware/react-logviewer";
-import { useState } from "react";
-import { type LogEntry, useLogs } from "../contexts/LogsContext";
+import { type Message, useLogs } from "../contexts/LogsContext";
 import { ChevronDoubleDownIcon } from "./Icons";
 
 const RESET = "[39m";
@@ -8,13 +7,20 @@ const GREEN = "[32m";
 const CYAN = "[36m";
 
 const Logs = () => {
-  const { paused, logs, wrapLines } = useLogs();
-  const [isAtBottom, setIsAtBottom] = useState(true);
+  const {
+    paused,
+    setPaused,
+    logs,
+    wrapLines,
+    isAtBottom,
+    setIsAtBottom,
+    setIsAtTop,
+  } = useLogs();
 
-  const logText = logs?.map
+  const logText = logs?.length
     ? logs
         ?.map(
-          (log: LogEntry) =>
+          (log: Message) =>
             `${GREEN}${new Date(log.timestamp).toLocaleString()}${RESET} - ${CYAN}${log.index}${RESET} - ${log.message}`,
         )
         ?.reverse()
@@ -59,10 +65,26 @@ const Logs = () => {
                 enableHotKeys
                 enableSearch={false}
                 follow={follow}
+                scrollFollow={isAtBottom}
                 onScroll={(scrollState) => {
                   onScroll(scrollState);
                   const { scrollTop, scrollHeight, clientHeight } = scrollState;
-                  setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 50);
+                  const isAtBottom =
+                    scrollTop + clientHeight >= scrollHeight - 50;
+                  const isAtTop = scrollTop === 0;
+                  if (isAtBottom) {
+                    setIsAtBottom(true);
+                    setIsAtTop(false);
+                    setPaused(false);
+                  } else if (isAtTop) {
+                    setIsAtBottom(false);
+                    setIsAtTop(true);
+                    setPaused(false);
+                  } else if (!isAtBottom && !isAtTop) {
+                    setPaused(true);
+                    setIsAtBottom(false);
+                    setIsAtTop(false);
+                  }
                 }}
                 selectableLines
                 wrapLines={wrapLines}

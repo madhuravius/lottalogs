@@ -87,7 +87,7 @@ mod tests {
             testing::db::seed::<App>(&ctx).await.unwrap();
             let _server = mock_es_search_success("/**/_search".to_string());
             let res = request
-                .get("/api/logs?search_text=test&start_timestamp=2023-10-01T00:00:00Z")
+                .get("/api/logs?search_text=test&min_timestamp=2023-10-01T00:00:00Z")
                 .await;
             assert_eq!(res.status_code(), 200);
         })
