@@ -1,6 +1,11 @@
 import { type ReactNode, createContext, useContext, useState } from "react";
 
-export interface LogEntry {
+export interface LogResponse {
+  messages: Message[];
+  total: number;
+}
+
+export interface Message {
   message: string;
   host: string;
   index: string;
@@ -11,22 +16,39 @@ export interface LogEntry {
 type LogsContextType = {
   paused: boolean;
   setPaused: (paused: boolean) => void;
-  logs: LogEntry[] | null;
-  setLogs: (logs: LogEntry[] | null) => void;
+  logs: Message[] | null;
+  setLogs: (logs: Message[] | null) => void;
   wrapLines: boolean;
   setWrapLines: (wrap: boolean) => void;
+  isAtBottom: boolean;
+  setIsAtBottom: (isAtBottom: boolean) => void;
+  isAtTop: boolean;
+  setIsAtTop: (isAtTop: boolean) => void;
 };
 
 const LogsContext = createContext<LogsContextType | undefined>(undefined);
 
 export const LogsProvider = ({ children }: { children: ReactNode }) => {
   const [paused, setPaused] = useState<boolean>(false);
-  const [logs, setLogs] = useState<LogEntry[] | null>(null);
+  const [isAtTop, setIsAtTop] = useState<boolean>(false);
+  const [isAtBottom, setIsAtBottom] = useState<boolean>(true);
+  const [logs, setLogs] = useState<Message[] | null>(null);
   const [wrapLines, setWrapLines] = useState<boolean>(false);
 
   return (
     <LogsContext.Provider
-      value={{ paused, setPaused, logs, setLogs, wrapLines, setWrapLines }}
+      value={{
+        paused,
+        setPaused,
+        logs,
+        setLogs,
+        wrapLines,
+        setWrapLines,
+        setIsAtBottom,
+        isAtBottom,
+        isAtTop,
+        setIsAtTop,
+      }}
     >
       {children}
     </LogsContext.Provider>

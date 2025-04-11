@@ -10,4 +10,4 @@ inputs = [ "app_logs" ]
 type = "elasticsearch"
 id_key = "vector-elasticsearch"
 inputs = ["deduped_app_logs"]
-endpoints = ["http://elasticsearch:9200"]
+endpoints = ["http://lottalogs_elasticsearch:9200"]
